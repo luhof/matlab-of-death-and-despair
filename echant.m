@@ -26,8 +26,29 @@ figure
 imagesc(log(fftshift(abs(fft2(imgBig)))))
 colormap gray
 
+%bilinear interpolation 
+bilin = zeros(512,512);
+bilin(1:2:end,1:2:end) = imgSmall;
+bilin(2:2:512-2, 2:2:512-2) = (bilin(1:2:512-3, 1:2:512-3) + bilin(1:2:512-3, 3:2:512) + bilin(1:2:512-3, 1:2:512-3) + bilin(3:2:512, 3:2:512))/4;
+bilin(2:2:512-2, 1:2:512-3) = (bilin(1:2:512-3, 1:2:512-3) + bilin(3:2:512, 1:2:512-3))/2;
+bilin(1:2:512-3, 2:2:512-2) = (bilin(1:2:512-3, 1:2:512-3) + bilin(1:2:512-3, 3:2:512))/2;
+bilin(end,:) = bilin(end-1,:);
+bilin(:,end) = bilin(:,end-1);
 
-% imgBigBilinear = interp2(imgSmall);
-% figure
-% imagesc(imgBigBilinear)
-% colormap gray
+figure
+imagesc(bilin)
+colormap gray
+
+errKron = mean((img(:) - imgBig(:)).^2);
+errBilin = mean((img(:) - bilin(:)).^2);
+
+S = zeros(512, 256);
+[n m] = ind2sub(size(S), 1:numel(S));
+n = reshape(n, 512, 256);
+m = reshape(m, 512, 256);
+S = sinc( (n-2*m)/2);
+shannon = S * imgSmall * S.';
+
+figure
+imagesc(shannon)
+colormap gray
