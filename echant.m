@@ -52,3 +52,23 @@ shannon = S * imgSmall * S.';
 figure
 imagesc(shannon)
 colormap gray
+
+errShannon2 = mean((img(:) - shannon2(:)).^2)
+
+figure
+imagesc(shannon2)
+colormap gray
+
+minShannon1 = min(min(shannon))
+minShannon2 = min(min(shannon2))
+maxShannon1 = max(max(shannon))
+maxShannon2 = max(max(shannon2))
+
+
+% truncate this image
+
+shannon3 = max(min(shannon2,255),0);
+
+figure
+imagesc(shannon3)
+colormap gray
